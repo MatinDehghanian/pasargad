@@ -48,15 +48,15 @@ class NodeManager:
         async with self._lock.writer_lock:
             old_node: PasarGuardNode | None = self._nodes.pop(node.id, None)
 
-            # Empty string means noTLS mode - pass None to the library
-            server_ca = node.server_ca if node.server_ca else None
+            # Empty string means noTLS mode
+            no_tls = not node.server_ca
 
             new_node = create_node(
                 connection=type_map[node.connection_type],
                 address=node.address,
                 port=node.port,
                 api_port=node.api_port,
-                server_ca=server_ca,
+                server_ca=node.server_ca if node.server_ca else None,
                 api_key=node.api_key,
                 name=node.name,
                 logger=self.logger,
@@ -64,6 +64,7 @@ class NodeManager:
                 internal_timeout=node.internal_timeout,
                 max_message_size=max_message_size,
                 extra={"id": node.id, "usage_coefficient": node.usage_coefficient},
+                no_tls=no_tls,
             )
 
             self._nodes[node.id] = new_node
