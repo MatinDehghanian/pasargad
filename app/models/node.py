@@ -40,7 +40,7 @@ class Node(BaseModel):
     api_port: int = 62051
     usage_coefficient: float = Field(gt=0, default=1.0)
     connection_type: NodeConnectionType
-    server_ca: str | None = None
+    server_ca: str = ""  # Empty string for noTLS mode
     keep_alive: int
     core_config_id: int
     api_key: str
@@ -93,9 +93,9 @@ class NodeCreate(Node):
 
     @field_validator("server_ca")
     @classmethod
-    def validate_certificate(cls, v: str | None) -> str | None:
+    def validate_certificate(cls, v: str | None) -> str:
         if v is None or v.strip() == "":
-            return None  # noTLS mode
+            return ""  # noTLS mode - empty string (DB column is NOT NULL)
 
         v = v.strip()
 
