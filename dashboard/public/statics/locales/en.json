@@ -1384,6 +1384,8 @@
     "days": "Days",
     "minutes": "Minutes",
     "seconds": "Seconds",
+    "noTls": "No TLS",
+    "noTlsDescription": "Disable TLS for node connection (insecure)",
     "certificate": "Certificate",
     "certificatePlaceholder": "Enter certificate",
     "status": "Node Status",

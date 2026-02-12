@@ -72,6 +72,7 @@ const Dashboard = () => {
       port: 62050,
       usage_coefficient: 1,
       connection_type: 'grpc' as any,
+      no_tls: false,
       server_ca: '',
       keep_alive: 60,
       keep_alive_unit: 'seconds',

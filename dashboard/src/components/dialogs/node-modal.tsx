@@ -123,6 +123,7 @@ export default function NodeModal({ isDialogOpen, onOpenChange, form, editingNod
         api_port: node.api_port ?? null,
         usage_coefficient: node.usage_coefficient,
         connection_type: node.connection_type,
+        no_tls: !node.server_ca || node.server_ca.trim() === '',
         server_ca: node.server_ca,
         keep_alive: node.keep_alive,
         keep_alive_unit: 'seconds',
@@ -185,6 +186,7 @@ export default function NodeModal({ isDialogOpen, onOpenChange, form, editingNod
           api_port: nodeData.api_port ?? null,
           usage_coefficient: nodeData.usage_coefficient,
           connection_type: nodeData.connection_type,
+          no_tls: !nodeData.server_ca || nodeData.server_ca.trim() === '',
           server_ca: nodeData.server_ca,
           keep_alive: nodeData.keep_alive,
           keep_alive_unit: 'seconds',
@@ -221,6 +223,7 @@ export default function NodeModal({ isDialogOpen, onOpenChange, form, editingNod
               api_port: nodeData.api_port ?? null,
               usage_coefficient: nodeData.usage_coefficient,
               connection_type: nodeData.connection_type,
+              no_tls: !nodeData.server_ca || nodeData.server_ca.trim() === '',
               server_ca: nodeData.server_ca,
               keep_alive: nodeData.keep_alive,
               keep_alive_unit: 'seconds',
@@ -251,6 +254,7 @@ export default function NodeModal({ isDialogOpen, onOpenChange, form, editingNod
         api_port: 62051,
         usage_coefficient: 1,
         connection_type: NodeConnectionType.grpc,
+        no_tls: false,
         server_ca: '',
         keep_alive: 60,
         keep_alive_unit: 'seconds',
@@ -323,6 +327,8 @@ export default function NodeModal({ isDialogOpen, onOpenChange, form, editingNod
         ...values,
         keep_alive: keepAliveInSeconds,
         keep_alive_unit: undefined,
+        no_tls: undefined, // Remove no_tls field as it's not part of the API
+        server_ca: values.no_tls ? '' : values.server_ca, // Send empty string for noTLS mode
         data_limit: gbToBytes(values.data_limit),
         reset_time: values.reset_time !== null && values.reset_time !== undefined ? values.reset_time : -1,
         api_port: values.api_port ?? undefined,
@@ -1169,24 +1175,44 @@ export default function NodeModal({ isDialogOpen, onOpenChange, form, editingNod
                     </AccordionItem>
                   </Accordion>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="server_ca"
-                  render={({ field }) => (
-                    <FormItem className="h-full w-full flex-1 pb-4 lg:mb-0">
-                      <FormLabel>{t('nodeModal.certificate')}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          dir="ltr"
-                          placeholder={t('nodeModal.certificatePlaceholder')}
-                          className={cn('h-[200px] font-mono text-xs lg:h-5/6', !!form.formState.errors.server_ca && 'border-destructive')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <div className="flex h-full w-full flex-1 flex-col pb-4 lg:mb-0">
+                  <FormField
+                    control={form.control}
+                    name="no_tls"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>{t('nodeModal.noTls')}</FormLabel>
+                          <p className="text-xs text-muted-foreground">{t('nodeModal.noTlsDescription')}</p>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  {!form.watch('no_tls') && (
+                    <FormField
+                      control={form.control}
+                      name="server_ca"
+                      render={({ field }) => (
+                        <FormItem className="h-full flex-1">
+                          <FormLabel>{t('nodeModal.certificate')}</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              dir="ltr"
+                              placeholder={t('nodeModal.certificatePlaceholder')}
+                              className={cn('h-[200px] font-mono text-xs lg:h-5/6', !!form.formState.errors.server_ca && 'border-destructive')}
+                              {...field}
+                              value={field.value ?? ''}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
+                </div>
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-3">

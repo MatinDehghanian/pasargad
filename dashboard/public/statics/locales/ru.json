@@ -1283,6 +1283,8 @@
     "days": "Дни",
     "minutes": "Минуты",
     "seconds": "Секунды",
+    "noTls": "Без TLS",
+    "noTlsDescription": "Отключить TLS для подключения к узлу (небезопасно)",
     "certificate": "Сертификат",
     "certificatePlaceholder": "Введите сертификат",
     "status": "Статус узла",

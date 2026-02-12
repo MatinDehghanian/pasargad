@@ -1226,6 +1226,8 @@
     "days": "روز",
     "minutes": "دقیقه",
     "seconds": "ثانیه",
+    "noTls": "بدون TLS",
+    "noTlsDescription": "غیرفعال کردن TLS برای اتصال گره (ناامن)",
     "certificate": "گواهی",
     "certificatePlaceholder": "گواهی را وارد کنید",
     "status": "وضعیت گره",
