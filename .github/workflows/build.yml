@@ -44,8 +44,16 @@ jobs:
           echo "## What's Changed in ${current}" > CHANGELOG.md
           echo "" >> CHANGELOG.md
           
-          # Use native git log to avoid ENOBUFS with changelogen
-          git log --pretty=format:"- %s (%h)" "${previous}..${current}" >> CHANGELOG.md
+          # Use native git log, limit to 500 commits to avoid GitHub's 125k char limit
+          git log --pretty=format:"- %s (%h)" "${previous}..${current}" -n 500 >> CHANGELOG.md
+          
+          # Check if there are more commits
+          total_commits=$(git rev-list --count "${previous}..${current}")
+          if [ "$total_commits" -gt 500 ]; then
+            echo "" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "_... and $((total_commits - 500)) more commits_" >> CHANGELOG.md
+          fi
           
           echo "" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
