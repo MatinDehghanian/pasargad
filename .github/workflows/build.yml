@@ -31,25 +31,15 @@ jobs:
           echo "previous=$prev_tag" >> "$GITHUB_OUTPUT"
           echo "current=$current_tag" >> "$GITHUB_OUTPUT"
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Generate changelog
         run: |
-          prev="${{ steps.tags.outputs.previous }}"
-          curr="${{ steps.tags.outputs.current }}"
-          
-          echo "## What's Changed" > CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          
-          # Get commits and categorize them
-          git log --pretty=format:"%s|||%h|||%an" "${prev}..${curr}" | while IFS='|||' read -r subject hash author; do
-            # Skip merge commits
-            [[ "$subject" =~ ^Merge ]] && continue
-            
-            # Format: - subject (hash) by @author
-            echo "- ${subject} (${hash})" >> CHANGELOG.md
-          done
-          
-          echo "" >> CHANGELOG.md
-          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${prev}...${curr}" >> CHANGELOG.md
+          bunx changelogen@latest --from "${{ steps.tags.outputs.previous }}" --to "${{ steps.tags.outputs.current }}" --output CHANGELOG.md
+          sed -i '/Generating changelog for /d' CHANGELOG.md
 
       - name: Update release notes
         env:
